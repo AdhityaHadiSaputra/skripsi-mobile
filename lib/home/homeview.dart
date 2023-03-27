@@ -1,6 +1,8 @@
 import 'dart:ffi';
 
 import 'package:coba/home/view.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/material.dart';
 
 import '../kategori/detail/view.dart';
@@ -11,6 +13,9 @@ class Homeviews extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Query dbRef = FirebaseDatabase.instance.ref().child('test');
+    DatabaseReference reference = FirebaseDatabase.instance.ref().child('test');
+
     return Scaffold(
       endDrawer: Drawer(
         // Add a ListView to the drawer. This ensures the user can scroll
@@ -65,53 +70,74 @@ class Homeviews extends StatelessWidget {
         ),
         backgroundColor: Colors.white,
       ),
-      body: CustomScrollView(
-        slivers: <Widget>[
-          SliverList(
-              delegate: SliverChildListDelegate([
-            const SizedBox(
-              height: 50,
-            ),
-            GridView.count(
-              shrinkWrap: true,
-              crossAxisCount: 4,
-              crossAxisSpacing: 10.0,
-              mainAxisSpacing: 10.0,
-              children: <Widget>[
-                InkWell(
-                  onTap: () => Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => KategoriView())),
-                  child: MenuIcon(
-                    icon: Icons.agriculture,
+      body: Container(
+        height: double.infinity,
+        child: CustomScrollView(
+          slivers: <Widget>[
+            SliverList(
+                delegate: SliverChildListDelegate([
+              const SizedBox(
+                height: 50,
+              ),
+              GridView.count(
+                shrinkWrap: true,
+                crossAxisCount: 4,
+                crossAxisSpacing: 10.0,
+                mainAxisSpacing: 10.0,
+                children: <Widget>[
+                  InkWell(
+                    onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => KategoriView())),
+                    child: MenuIcon(
+                      icon: Icons.agriculture,
+                      iconColor: Colors.red,
+                      label: 'Pemupukan',
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => DetailKategoriView(
+                              hallo: 'halo saa',
+                            ))),
+                    child: MenuIcon(
+                      icon: Icons.water,
+                      iconColor: Colors.blue,
+                      label: 'Penyiraman',
+                    ),
+                  ),
+                  InkWell(
+                    // onTap: () => Navigator.of(context).push(MaterialPageRoute(
+                    //     builder: (context) => (
+                    //           title: 'Hallo',
+                    //         ))),
+                    child: MenuIcon(
+                      icon: Icons.agriculture,
+                      iconColor: Colors.red,
+                      label: 'Pemupukan',
+                    ),
+                  ),
+                  MenuIcon(
+                    icon: Icons.pest_control,
                     iconColor: Colors.red,
-                    label: 'Pemupukan',
+                    label: 'Control Hama',
                   ),
-                ),
-                InkWell(
-                  onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => DetailKategoriView(
-                            hallo: 'halo saa',
-                          ))),
-                  child: MenuIcon(
-                    icon: Icons.water,
-                    iconColor: Colors.blue,
-                    label: 'Penyiraman',
-                  ),
-                ),
-                MenuIcon(
-                  icon: Icons.ac_unit,
-                  iconColor: Colors.red,
-                  label: 'Pendinginan',
-                ),
-                MenuIcon(
-                  icon: Icons.pest_control,
-                  iconColor: Colors.red,
-                  label: 'Control Hama',
-                ),
-              ],
-            )
-          ]))
-        ],
+                  FirebaseAnimatedList(
+                      query: dbRef,
+                      itemBuilder: (context, snapshot, animation, index) {
+                        debugPrint('clog ${snapshot.value}');
+
+                        return Column(
+                          children: [
+                            Icon(Icons.data_object_outlined),
+                            Text(snapshot.value.toString()),
+                          ],
+                        );
+                      })
+                ],
+              )
+            ]))
+          ],
+        ),
       ),
     );
   }
